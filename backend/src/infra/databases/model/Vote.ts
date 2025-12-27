@@ -33,5 +33,12 @@ Vote.init(
     sequelize,
     tableName: "votes",
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["pollId", "voterId"],
+        name: "unique_vote_per_user_per_poll",
+      },
+    ],
   }
 );

@@ -22,7 +22,6 @@ export const useGetPollController = (
   useEffect(() => {
     if (isSuccess) {
       setPollDetails(data);
-      console.log("useGetPollController" ,data);
     }
   }, [isSuccess]);
 

@@ -1,3 +1,4 @@
+import { CreateVoteTransactionOuttype } from "../../app/contracts/poll";
 import { ITransactionService } from "../../app/providers/ITransactionService";
 import { IOptionRepo } from "../../app/repositories/IOptionRepo";
 import { IOptionResultRepo } from "../../app/repositories/IOptionResultRepo";
@@ -39,20 +40,30 @@ export class TransactionService implements ITransactionService {
     pollId: number,
     optionId: number,
     voterId: string
-  ): Promise<number | null> {
-    let votedOption: number | null = null;
+  ): Promise<CreateVoteTransactionOuttype> {
+    let result: CreateVoteTransactionOuttype= {
+      hasVoted: null,
+      isExpired: false,
+    };
 
     await sequelize.transaction(async (t) => {
+      const expiresAt = await this.pollRepo.getPollExpireDate(pollId, {
+        transaction: t,
+      });
+      if (!expiresAt || expiresAt <= new Date()) {
+        result.isExpired = true;
+        return;
+      }
       const hasVoted = await this.voteRepo.hasVoted(pollId, voterId, {
         transaction: t,
       });
       if (hasVoted) {
-        votedOption = hasVoted;
+        result.hasVoted = hasVoted;
         return;
       }
       await this.voteRepo.createVote(pollId, optionId, voterId, t);
       await this.optionResultRepo.updateOptionCount(optionId, t);
     });
-    return votedOption;
+    return result;
   }
 }

@@ -69,7 +69,6 @@ export function CreatePollModal() {
       toast.error(ERROR_MESSAGE.OPTIONS_TOO_LONG);
       return;
     }
-    console.log(" Creating poll:", { question, options, expiresAt });
     mutate({ question, options, expiresAt });
   };
 

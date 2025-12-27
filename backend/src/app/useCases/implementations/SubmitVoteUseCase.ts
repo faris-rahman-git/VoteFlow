@@ -6,14 +6,13 @@ import { ISubmitVoteUseCase } from "../interfaces/ISubmitVoteUseCase";
 import { IPollServices } from "../../providers/IPollServices";
 import { ITransactionService } from "../../providers/ITransactionService";
 import { ISocketService } from "../../providers/ISocketService";
+import { CreateVoteTransactionOuttype } from "../../contracts/poll";
 
 export class SubmitVoteUseCase implements ISubmitVoteUseCase {
   constructor(
     private OptionResultRepo: IOptionResultRepo,
     private voteRepo: IVoteRepo,
-    private pollServices: IPollServices,
-    private transactionService: ITransactionService,
-    private socketService: ISocketService
+    private transactionService: ITransactionService
   ) {}
 
   async execute(
@@ -21,16 +20,23 @@ export class SubmitVoteUseCase implements ISubmitVoteUseCase {
     optionId: number,
     voterId: string
   ): Promise<ResponseDTO> {
-    const isActive = await this.pollServices.checkPollExpired(pollId);
-    if (!isActive) {
+    let result: CreateVoteTransactionOuttype;
+    try {
+      result = await this.transactionService.createVoteTransaction(
+        pollId,
+        optionId,
+        voterId
+      );
+    } catch (err) {
+      return {
+        statusCode: 400,
+        data: { message: POLL_ERRORS.VOTE_ALREADY_SUBMITTED },
+      };
+    }
+    if (result.isExpired) {
       return { statusCode: 400, data: { message: POLL_ERRORS.POLL_EXPIRED } };
     }
-    const hasVoted = await this.transactionService.createVoteTransaction(
-      pollId,
-      optionId,
-      voterId
-    );
-    if (hasVoted) {
+    if (result.hasVoted) {
       return {
         statusCode: 400,
         data: { message: POLL_ERRORS.VOTE_ALREADY_SUBMITTED },
@@ -42,17 +48,9 @@ export class SubmitVoteUseCase implements ISubmitVoteUseCase {
     const optionResultMap = await this.OptionResultRepo.getOptionsResult(
       pollId
     );
-    console.log("hasVoted1:- ", hasVoted);
-
-    this.socketService.EmitUpdatedPoll(pollId, {
-      totalVotes,
-      options: optionResultMap,
-    });
-    console.log("hasVoted2:- ", hasVoted);
     return {
       statusCode: 200,
       data: {
-        isActive,
         hasVoted: optionId,
         options: optionResultMap,
         totalVotes,

@@ -1,6 +1,7 @@
 import { IPollRepo } from "../../app/repositories/IPollRepo";
 import { Transaction } from "sequelize";
 import { Poll } from "../databases/model/Poll";
+import { Vote } from "../databases/model/Vote";
 
 export class PollRepo implements IPollRepo {
   constructor() {}
@@ -36,8 +37,15 @@ export class PollRepo implements IPollRepo {
     };
   }
 
-  async getPollExpireDate(pollId: number): Promise<Date | null> {
-    const poll = await Poll.findByPk(pollId);
+  async getPollExpireDate(
+    pollId: number,
+    options?: { transaction?: Transaction }
+  ): Promise<Date | null> {
+    const poll = await Poll.findOne({
+      where: { id: pollId },
+      transaction: options?.transaction,
+      lock: options?.transaction ? options.transaction.LOCK.UPDATE : undefined,
+    });
     return poll ? poll.expiresAt : null;
   }
 }

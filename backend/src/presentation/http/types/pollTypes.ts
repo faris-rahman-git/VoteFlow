@@ -14,3 +14,10 @@ export type SubmitVoteInType = {
   optionId: number;
   voterId: string;
 };
+
+export type SubmitVoteOutType = {
+  isActive: boolean;
+  hasVoted: number;
+  options: Record<number, number>;
+  totalVotes: number;
+};

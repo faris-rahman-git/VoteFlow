@@ -12,7 +12,6 @@ export const submitVoteComposer = () => {
   const pollRepo = new PollRepo();
   const optionResultRepo = new OptionResultRepo();
   const voteRepo = new VoteRepo();
-  const pollServices = new PollServices(pollRepo);
   const transactionService = new TransactionService(
     pollRepo,
     new OptionRepo(),
@@ -22,9 +21,8 @@ export const submitVoteComposer = () => {
   const submitVoteUseCase = new SubmitVoteUseCase(
     optionResultRepo,
     voteRepo,
-    pollServices,
     transactionService,
-    new SocketService()
+  
   );
-  return new SubmitVoteController(submitVoteUseCase);
+  return new SubmitVoteController(submitVoteUseCase ,new SocketService());
 };

@@ -14,5 +14,8 @@ export interface IPollRepo {
     pollCode: string
   ): Promise<{ id: number; question: string; expiresAt: Date } | null>;
 
-  getPollExpireDate(pollId: number): Promise<Date | null>;
+  getPollExpireDate(
+    pollId: number,
+    options?: { transaction?: Transaction }
+  ): Promise<Date | null>;
 }

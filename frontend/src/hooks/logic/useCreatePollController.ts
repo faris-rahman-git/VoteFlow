@@ -26,7 +26,6 @@ export const useCreatePollController = (
 
   useEffect(() => {
     if (isSuccess && data.pollCode) {
-      console.log(data);
       const pollUrl = `${BASE_URL}/poll/${data.pollCode}`;
 
       //autocopy url

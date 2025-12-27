@@ -18,6 +18,7 @@ export class VoteRepo implements IVoteRepo {
     const vote = await Vote.findOne({
       where: { pollId, voterId },
       transaction: options?.transaction,
+      lock: options?.transaction ? options.transaction.LOCK.UPDATE : undefined,
     });
     return vote?.optionId ?? null;
   }

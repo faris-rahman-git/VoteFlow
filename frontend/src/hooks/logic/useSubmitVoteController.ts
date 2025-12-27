@@ -28,12 +28,10 @@ export const useSubmitVoteController = (
   useEffect(() => {
     if (isSuccess) {
       toast.success(SUCCESS_MESSAGE.VOTE_SUBMITTED);
-      console.log("useSubmitVoteController", data);
       setPollDetails((prev) => {
         if (!prev) return prev;
         return {
           ...prev,
-          isActive: data.isActive,
           hasVoted: data.hasVoted,
           options: data.options
             ? prev.options.map((opt) => ({
@@ -44,15 +42,12 @@ export const useSubmitVoteController = (
           totalVotes: data.totalVotes,
         };
       });
-      if (data.isActive) {
-        socket.emit("join_live", {
-          pollId,
-          voterId,
-          isSwitch: true,
-        });
-      }
+      socket.emit("join_live", {
+        pollId,
+        voterId,
+        isSwitch: true,
+      });
     }
-
   }, [isSuccess]);
 
   useEffect(() => {

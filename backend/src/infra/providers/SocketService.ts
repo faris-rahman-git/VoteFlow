@@ -14,7 +14,6 @@ export class SocketService implements ISocketService {
 
   joinToVotesRoom(socket: Socket, pollId: number, isSwitch: boolean): void {
     if (isSwitch) {
-      console.log("join to votes room");
       this.leaveNonVotesRoom(socket, pollId);
     }
     socket.join(VOTED_ROOM + pollId);

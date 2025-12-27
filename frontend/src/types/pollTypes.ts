@@ -36,7 +36,6 @@ export type SubmitVoteInType = {
 };
 
 export type SubmitVoteOutType = {
-  isActive: boolean;
   hasVoted: number;
   options: Record<number, number>;
   totalVotes: number;
