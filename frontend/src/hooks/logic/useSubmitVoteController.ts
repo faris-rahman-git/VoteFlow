@@ -42,6 +42,12 @@ export const useSubmitVoteController = (
         toast.error(
           error.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
         );
+        if (error.response?.data?.message === ERROR_MESSAGE.POLL_EXPIRED) {
+          setPollDetails({
+            ...pollDetails,
+            isActive: false,
+          });
+        }
       } else {
         toast.error(error.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG);
       }
