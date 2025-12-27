@@ -14,27 +14,30 @@ import { CheckCircle2, Loader2, Users } from "lucide-react";
 import Navbar from "@/components/features/common/Navbar";
 import Footer from "@/components/features/common/Footer";
 import { useNavigate, useParams } from "react-router-dom";
-import type { GetPollOutType } from "@/types/pollTypes";
+import type { GetPollOutType, LiveResultType } from "@/types/pollTypes";
 import { useGetPollController } from "@/hooks/logic/useGetPollController";
 import { validatePollCode } from "@/utils/validatePollCode";
 import { toast } from "sonner";
 import { ERROR_MESSAGE } from "@/constants/errors";
 import { getVoterId } from "@/utils/voter";
 import { useSubmitVoteController } from "@/hooks/logic/useSubmitVoteController";
+import socket from "@/configs/socket";
 
 export default function Poll() {
   const { pollCode } = useParams();
   const [submitting, setSubmitting] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [pollDetails, setPollDetails] = useState<GetPollOutType | null>(null);
+  const voterId = getVoterId();
   const { mutate } = useGetPollController(setPollDetails);
   const { mutate: submitVoteMutate } = useSubmitVoteController(
     setPollDetails,
-    pollDetails!,
-    setSubmitting
+    pollDetails?.poll.id!,
+    setSubmitting,
+    handleGetPollMutate,
+    voterId
   );
   const navigate = useNavigate();
-  const voterId = getVoterId();
 
   useEffect(() => {
     if (!pollCode || !validatePollCode(pollCode)) {
@@ -42,8 +45,65 @@ export default function Poll() {
       navigate("/");
       return;
     }
-    mutate({ pollCode, voterId });
+    handleGetPollMutate();
   }, []);
+
+  useEffect(() => {
+    const handleConnect = () => {
+      if (!pollDetails?.poll.id || !voterId || !pollDetails.isActive) return;
+
+      socket.emit("join_live", {
+        pollId: pollDetails.poll.id,
+        voterId,
+        isSwitch: false,
+      });
+    };
+
+    if (socket.connected) {
+      handleConnect();
+    }
+
+    socket.on("connect", handleConnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [pollDetails?.poll.id, voterId, pollDetails?.isActive]);
+
+  useEffect(() => {
+    const handlePollResults = (data: LiveResultType) => {
+      setPollDetails((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          options: data.options
+            ? prev.options.map((opt) => ({
+                ...opt,
+                count: data.options![opt.id] ?? 0,
+              }))
+            : prev.options,
+          totalVotes: data.totalVotes,
+        };
+      });
+    };
+
+    const handleResultErrors = ({ message }: { message: string }) => {
+      toast.error(message || "Socket error! Please try Reloading the page.");
+    };
+
+    socket.on("poll_results", handlePollResults);
+    socket.on("result_error", handleResultErrors);
+
+    return () => {
+      socket.off("poll_results", handlePollResults);
+      socket.off("result_error", handleResultErrors);
+    };
+  }, []);
+
+  function handleGetPollMutate() {
+    mutate({ pollCode: pollCode!, voterId });
+  }
 
   const handleVote = async () => {
     if (!selectedOption) {
@@ -146,7 +206,7 @@ export default function Poll() {
               <div className="space-y-6 py-2">
                 {pollDetails?.options.map((option) => {
                   const percentage = Math.round(
-                    (option.count / (pollDetails.totalVotes )) * 100
+                    (option.count / pollDetails.totalVotes) * 100
                   );
                   return (
                     <div
@@ -161,7 +221,7 @@ export default function Poll() {
                           )}
                         </span>
                         <span className="font-mono font-medium">
-                          {percentage}%
+                          {isNaN(percentage) ? 0 : percentage}%
                         </span>
                       </div>
                       <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary/50">

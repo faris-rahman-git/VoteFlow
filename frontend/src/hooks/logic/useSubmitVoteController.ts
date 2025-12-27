@@ -4,11 +4,15 @@ import { toast } from "sonner";
 import type { GetPollOutType } from "@/types/pollTypes";
 import { ERROR_MESSAGE } from "@/constants/errors";
 import { useSubmitVote } from "../api/useSubmitVote";
+import { SUCCESS_MESSAGE } from "@/constants/success";
+import socket from "@/configs/socket";
 
 export const useSubmitVoteController = (
   setPollDetails: React.Dispatch<React.SetStateAction<GetPollOutType | null>>,
-  pollDetails: GetPollOutType,
-  setSubmitting: React.Dispatch<React.SetStateAction<boolean>>
+  pollId: number,
+  setSubmitting: React.Dispatch<React.SetStateAction<boolean>>,
+  handleGetPollMutate: () => void,
+  voterId: string
 ) => {
   const { isPending, isSuccess, isError, mutate, error, data } =
     useSubmitVote();
@@ -23,17 +27,32 @@ export const useSubmitVoteController = (
 
   useEffect(() => {
     if (isSuccess) {
-      setPollDetails({
-        ...pollDetails,
-        isActive: data.isActive,
-        hasVoted: data.hasVoted,
-        options: pollDetails.options.map((opt) => ({
-          ...opt,
-          count: data.options[opt.id] ?? 0,
-        })),
-        totalVotes: data.totalVotes,
+      toast.success(SUCCESS_MESSAGE.VOTE_SUBMITTED);
+      console.log("useSubmitVoteController", data);
+      setPollDetails((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          isActive: data.isActive,
+          hasVoted: data.hasVoted,
+          options: data.options
+            ? prev.options.map((opt) => ({
+                ...opt,
+                count: data.options![opt.id] ?? 0,
+              }))
+            : prev.options,
+          totalVotes: data.totalVotes,
+        };
       });
+      if (data.isActive) {
+        socket.emit("join_live", {
+          pollId,
+          voterId,
+          isSwitch: true,
+        });
+      }
     }
+
   }, [isSuccess]);
 
   useEffect(() => {
@@ -42,11 +61,11 @@ export const useSubmitVoteController = (
         toast.error(
           error.response?.data?.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG
         );
-        if (error.response?.data?.message === ERROR_MESSAGE.POLL_EXPIRED) {
-          setPollDetails({
-            ...pollDetails,
-            isActive: false,
-          });
+        if (
+          error.response?.data?.message === ERROR_MESSAGE.POLL_EXPIRED ||
+          error.response?.data?.message === ERROR_MESSAGE.VOTE_ALREADY_SUBMITTED
+        ) {
+          handleGetPollMutate();
         }
       } else {
         toast.error(error.message || ERROR_MESSAGE.SOMETHING_WENT_WRONG);

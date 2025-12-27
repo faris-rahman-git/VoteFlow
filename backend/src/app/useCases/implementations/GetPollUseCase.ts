@@ -31,7 +31,7 @@ export class GetPollUseCase implements IGetPollUseCase {
 
     const isActive = pollRes.expiresAt > new Date();
 
-    if (hasVoted) {
+    if (hasVoted || !isActive) {
       const optionResultMap = await this.OptionResultRepo.getOptionsResult(
         pollRes.id
       );

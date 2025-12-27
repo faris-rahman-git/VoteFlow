@@ -39,10 +39,20 @@ export class TransactionService implements ITransactionService {
     pollId: number,
     optionId: number,
     voterId: string
-  ): Promise<void> {
+  ): Promise<number | null> {
+    let votedOption: number | null = null;
+
     await sequelize.transaction(async (t) => {
+      const hasVoted = await this.voteRepo.hasVoted(pollId, voterId, {
+        transaction: t,
+      });
+      if (hasVoted) {
+        votedOption = hasVoted;
+        return;
+      }
       await this.voteRepo.createVote(pollId, optionId, voterId, t);
       await this.optionResultRepo.updateOptionCount(optionId, t);
     });
+    return votedOption;
   }
 }

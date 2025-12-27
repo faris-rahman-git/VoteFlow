@@ -6,6 +6,7 @@ import { SubmitVoteController } from "../../../presentation/http/controller/subm
 import { SubmitVoteUseCase } from "../../../app/useCases/implementations/SubmitVoteUseCase";
 import { PollServices } from "../../providers/PollServices";
 import { TransactionService } from "../../providers/TransactionService";
+import { SocketService } from "../../providers/SocketService";
 
 export const submitVoteComposer = () => {
   const pollRepo = new PollRepo();
@@ -22,7 +23,8 @@ export const submitVoteComposer = () => {
     optionResultRepo,
     voteRepo,
     pollServices,
-    transactionService
+    transactionService,
+    new SocketService()
   );
   return new SubmitVoteController(submitVoteUseCase);
 };

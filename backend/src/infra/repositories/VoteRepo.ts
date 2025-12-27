@@ -10,8 +10,15 @@ export class VoteRepo implements IVoteRepo {
     return totalVotes;
   }
 
-  async hasVoted(pollId: number, voterId: string): Promise<number | null> {
-    const vote = await Vote.findOne({ where: { pollId, voterId } });
+  async hasVoted(
+    pollId: number,
+    voterId: string,
+    options?: { transaction?: Transaction }
+  ): Promise<number | null> {
+    const vote = await Vote.findOne({
+      where: { pollId, voterId },
+      transaction: options?.transaction,
+    });
     return vote?.optionId ?? null;
   }
 

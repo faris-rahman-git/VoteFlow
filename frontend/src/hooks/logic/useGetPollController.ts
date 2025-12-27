@@ -9,7 +9,7 @@ import { ERROR_MESSAGE } from "@/constants/errors";
 import { useNavigate } from "react-router-dom";
 
 export const useGetPollController = (
-  setPollDetails: React.Dispatch<React.SetStateAction<GetPollOutType | null>>
+  setPollDetails: React.Dispatch<React.SetStateAction<GetPollOutType | null>>,
 ) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ export const useGetPollController = (
   useEffect(() => {
     if (isSuccess) {
       setPollDetails(data);
+      console.log("useGetPollController" ,data);
     }
   }, [isSuccess]);
 
