@@ -30,4 +30,8 @@ export class PollServices implements IPollServices {
     }
   }
 
+  async checkPollExpired(pollId: number): Promise<boolean> {
+    const expiresAt = await this.pollRepo.getPollExpireDate(pollId);
+    return expiresAt ? expiresAt > new Date() : false;
+  }
 }

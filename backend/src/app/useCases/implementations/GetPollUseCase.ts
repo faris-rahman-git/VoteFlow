@@ -1,4 +1,4 @@
-import { PollErrors } from "../../../domain/constants/errors";
+import { POLL_ERRORS } from "../../../domain/constants/errors";
 import { ResponseDTO } from "../../../domain/entity/ResponseDTO";
 import { IOptionRepo } from "../../repositories/IOptionRepo";
 import { IOptionResultRepo } from "../../repositories/IOptionResultRepo";
@@ -20,7 +20,7 @@ export class GetPollUseCase implements IGetPollUseCase {
     if (!pollRes)
       return {
         statusCode: 404,
-        data: { message: PollErrors.INVALID_POLL_LINK },
+        data: { message: POLL_ERRORS.INVALID_POLL_LINK },
       };
 
     const optionsRes = await this.OptionRepo.getOptions(pollRes.id);

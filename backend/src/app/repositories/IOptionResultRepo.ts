@@ -7,7 +7,7 @@ export interface IOptionResultRepo {
     transaction: Transaction
   ): Promise<void>;
 
-  getOptionsResult(
-    pollId: number
-  ): Promise<Promise<Record<number, number>>>;
+  getOptionsResult(pollId: number): Promise<Promise<Record<number, number>>>;
+
+  updateOptionCount(optionId: number, transaction: Transaction): Promise<void>;
 }

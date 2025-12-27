@@ -35,4 +35,9 @@ export class PollRepo implements IPollRepo {
       expiresAt: poll.expiresAt,
     };
   }
+
+  async getPollExpireDate(pollId: number): Promise<Date | null> {
+    const poll = await Poll.findByPk(pollId);
+    return poll ? poll.expiresAt : null;
+  }
 }

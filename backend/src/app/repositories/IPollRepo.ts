@@ -13,4 +13,6 @@ export interface IPollRepo {
   getPoll(
     pollCode: string
   ): Promise<{ id: number; question: string; expiresAt: Date } | null>;
+
+  getPollExpireDate(pollId: number): Promise<Date | null>;
 }

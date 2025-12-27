@@ -4,7 +4,13 @@ export type CreatePollType = {
     expiresAt: string
 }
 
-export type getPollIntype = {
+export type GetPollIntype = {
   pollCode: string;
+  voterId: string;
+};
+
+export type SubmitVoteInType = {
+  pollId: number;
+  optionId: number;
   voterId: string;
 };

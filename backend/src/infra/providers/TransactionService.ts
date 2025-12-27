@@ -2,13 +2,15 @@ import { ITransactionService } from "../../app/providers/ITransactionService";
 import { IOptionRepo } from "../../app/repositories/IOptionRepo";
 import { IOptionResultRepo } from "../../app/repositories/IOptionResultRepo";
 import { IPollRepo } from "../../app/repositories/IPollRepo";
+import { IVoteRepo } from "../../app/repositories/IVoteRepo";
 import { sequelize } from "../databases/dbConnection";
 
 export class TransactionService implements ITransactionService {
   constructor(
     private pollRepo: IPollRepo,
     private optionRepo: IOptionRepo,
-    private optionResultRepo: IOptionResultRepo
+    private optionResultRepo: IOptionResultRepo,
+    private voteRepo: IVoteRepo
   ) {}
 
   async createPollTransaction(
@@ -30,6 +32,17 @@ export class TransactionService implements ITransactionService {
         t
       );
       await this.optionResultRepo.initOptionsResult(pollId, optionIds, t);
+    });
+  }
+
+  async createVoteTransaction(
+    pollId: number,
+    optionId: number,
+    voterId: string
+  ): Promise<void> {
+    await sequelize.transaction(async (t) => {
+      await this.voteRepo.createVote(pollId, optionId, voterId, t);
+      await this.optionResultRepo.updateOptionCount(optionId, t);
     });
   }
 }

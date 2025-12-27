@@ -5,4 +5,6 @@ export interface ITransactionService {
     options: string[],
     expiresAt: Date
   ): Promise<void>;
+
+  createVoteTransaction(pollId: number, optionId: number, voterId: string): Promise<void>;
 }

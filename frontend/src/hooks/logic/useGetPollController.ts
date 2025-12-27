@@ -4,12 +4,12 @@ import { useDispatch } from "react-redux";
 import { hideLoader, showLoader } from "@/redux/slice/LoaderSlice";
 import { toast } from "sonner";
 import { useGetPoll } from "../api/useGetPoll";
-import type { getPollOutType } from "@/types/pollTypes";
+import type { GetPollOutType } from "@/types/pollTypes";
 import { ERROR_MESSAGE } from "@/constants/errors";
 import { useNavigate } from "react-router-dom";
 
 export const useGetPollController = (
-  setPollDetails: React.Dispatch<React.SetStateAction<getPollOutType | null>>
+  setPollDetails: React.Dispatch<React.SetStateAction<GetPollOutType | null>>
 ) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();

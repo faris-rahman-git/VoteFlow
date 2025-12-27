@@ -14,36 +14,52 @@ import { CheckCircle2, Loader2, Users } from "lucide-react";
 import Navbar from "@/components/features/common/Navbar";
 import Footer from "@/components/features/common/Footer";
 import { useNavigate, useParams } from "react-router-dom";
-import type { getPollOutType } from "@/types/pollTypes";
+import type { GetPollOutType } from "@/types/pollTypes";
 import { useGetPollController } from "@/hooks/logic/useGetPollController";
 import { validatePollCode } from "@/utils/validatePollCode";
 import { toast } from "sonner";
 import { ERROR_MESSAGE } from "@/constants/errors";
 import { getVoterId } from "@/utils/voter";
+import { useSubmitVoteController } from "@/hooks/logic/useSubmitVoteController";
 
 export default function Poll() {
   const { pollCode } = useParams();
   const [submitting, setSubmitting] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [pollDetails, setPollDetails] = useState<getPollOutType | null>(null);
+  const [pollDetails, setPollDetails] = useState<GetPollOutType | null>(null);
   const { mutate } = useGetPollController(setPollDetails);
+  const { mutate: submitVoteMutate } = useSubmitVoteController(
+    setPollDetails,
+    pollDetails!,
+    setSubmitting
+  );
   const navigate = useNavigate();
+  const voterId = getVoterId();
+
   useEffect(() => {
     if (!pollCode || !validatePollCode(pollCode)) {
       toast.error(ERROR_MESSAGE.INVALID_POLL_LINK);
       navigate("/");
       return;
     }
-    const voterId = getVoterId();
     mutate({ pollCode, voterId });
   }, []);
 
   const handleVote = async () => {
-    if (!selectedOption || !pollCode) return;
-
+    if (!selectedOption) {
+      toast.error(ERROR_MESSAGE.INVALID_OPTION);
+      return;
+    }
+    if (!pollDetails || !voterId) {
+      toast.error(ERROR_MESSAGE.SOMETHING_WENT_WRONG);
+      return;
+    }
     setSubmitting(true);
-
-    // setPollDetails({ ...pollDetails, options: updatedOptions });
+    submitVoteMutate({
+      pollId: pollDetails.poll.id,
+      optionId: Number(selectedOption),
+      voterId,
+    });
 
     setSubmitting(false);
   };
@@ -130,7 +146,7 @@ export default function Poll() {
               <div className="space-y-6 py-2">
                 {pollDetails?.options.map((option) => {
                   const percentage = Math.round(
-                    (option.count / (pollDetails.totalVotes + 1)) * 100
+                    (option.count / (pollDetails.totalVotes )) * 100
                   );
                   return (
                     <div

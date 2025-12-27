@@ -5,6 +5,7 @@ import { TransactionService } from "../../providers/TransactionService";
 import { PollRepo } from "../../repositories/PollRepo";
 import { OptionRepo } from "../../repositories/OptionRepo";
 import { OptionResultRepo } from "../../repositories/OptionResultRepo";
+import { VoteRepo } from "../../repositories/VoteRepo";
 
 export const createPollComposer = () => {
   const pollRepo = new PollRepo();
@@ -12,7 +13,8 @@ export const createPollComposer = () => {
   const transactionService = new TransactionService(
     pollRepo,
     new OptionRepo(),
-    new OptionResultRepo()
+    new OptionResultRepo(),
+    new VoteRepo()
   );
   const createPollUseCase = new CreatePollUseCase(
     pollServices,

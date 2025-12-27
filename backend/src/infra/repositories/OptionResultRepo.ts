@@ -32,4 +32,14 @@ export class OptionResultRepo implements IOptionResultRepo {
 
     return map;
   }
+
+  async updateOptionCount(
+    optionId: number,
+    transaction: Transaction
+  ): Promise<void> {
+    await OptionResult.increment(
+      { voteCount: 1 },
+      { where: { id: optionId }, transaction }
+    );
+  }
 }

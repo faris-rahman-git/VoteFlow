@@ -1,8 +1,14 @@
+import { Transaction } from "sequelize";
+
 export interface IVoteRepo {
   getTotalVotes(pollId: number): Promise<number>;
 
-  hasVoted(
+  hasVoted(pollId: number, voterId: string): Promise<number | null>;
+
+  createVote(
     pollId: number,
-    voterId: string
-  ): Promise< number | null >;
+    optionId: number,
+    voterId: string,
+    transaction: Transaction
+  ): Promise<void>;
 }
