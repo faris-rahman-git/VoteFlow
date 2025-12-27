@@ -20,7 +20,7 @@ npm run dev
 ### Build for Production
 ```bash
 npm run build
-npm start
+npm run preview
 ```
 
 ### Environment Variables
