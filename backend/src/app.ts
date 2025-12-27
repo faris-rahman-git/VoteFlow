@@ -32,10 +32,6 @@ app.use(limiter);
 // API Routes
 app.use(BASE_ROUTE + "/poll", pollRoute);
 
-app.get("/", (_req, res) => {
-  res.send("API running");
-});
-
 app.use(errorHandler);
 
 export default app;

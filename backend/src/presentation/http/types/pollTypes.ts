@@ -3,3 +3,8 @@ export type CreatePollType = {
     options: string[];
     expiresAt: string
 }
+
+export type getPollIntype = {
+  pollCode: string;
+  voterId: string;
+};

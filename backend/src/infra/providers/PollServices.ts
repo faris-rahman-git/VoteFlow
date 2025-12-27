@@ -29,4 +29,5 @@ export class PollServices implements IPollServices {
       pollCode = this.generateCode();
     }
   }
+
 }

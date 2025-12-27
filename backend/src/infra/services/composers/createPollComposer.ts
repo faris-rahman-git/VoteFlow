@@ -1,7 +1,6 @@
 import { CreatePollUseCase } from "../../../app/useCases/implementations/CreatePollUseCase";
 import { createPollController } from "../../../presentation/http/controller/createPollController";
 import { PollServices } from "../../providers/PollServices";
-import { Transaction } from "sequelize";
 import { TransactionService } from "../../providers/TransactionService";
 import { PollRepo } from "../../repositories/PollRepo";
 import { OptionRepo } from "../../repositories/OptionRepo";

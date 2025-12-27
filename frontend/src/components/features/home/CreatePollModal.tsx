@@ -13,8 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCreatePollForm } from "@/hooks/logic/useCreatePollForm";
+import { useCreatePollController } from "@/hooks/logic/useCreatePollController";
 import { toast } from "sonner";
+import { ERROR_MESSAGE } from "@/constants/errors";
 
 export function CreatePollModal() {
   const [open, setOpen] = useState(false);
@@ -22,7 +23,7 @@ export function CreatePollModal() {
   const [options, setOptions] = useState(["", ""]);
   const [expiryDate, setExpiryDate] = useState("");
   const [expiryTime, setExpiryTime] = useState("");
-  const { mutate } = useCreatePollForm(setOpen, setQuestion, setOptions);
+  const { mutate } = useCreatePollController(setOpen, setQuestion, setOptions);
 
   const canAddOption =
     options.every((opt) => opt.trim() !== "") && options.length < 10;
@@ -57,7 +58,7 @@ export function CreatePollModal() {
       `${expiryDate}T${expiryTime}`
     ).toISOString();
     if (expiresAt === "Invalid Date" || expiresAt < new Date().toISOString()) {
-      toast.error("Please provide a valid date and time");
+      toast.error(ERROR_MESSAGE.INVALID_DATE);
       return;
     }
     console.log("[v0] Creating poll:", { question, options, expiresAt });

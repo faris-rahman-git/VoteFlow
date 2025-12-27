@@ -19,4 +19,9 @@ export class OptionRepo implements IOptionRepo {
 
     return createdOptions.map((opt) => opt.id);
   }
+
+  async getOptions(pollId: number): Promise<{ id: number; text: string ; count: number }[]> {
+    const options = await Option.findAll({ where: { pollId } });
+    return options.map((opt) => ({ id: opt.id, text: opt.text , count: 0}));
+  }
 }

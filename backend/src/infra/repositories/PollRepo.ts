@@ -23,4 +23,16 @@ export class PollRepo implements IPollRepo {
     const poll = await Poll.findOne({ where: { pollCode } });
     return !!poll;
   }
+
+  async getPoll(
+    pollCode: string
+  ): Promise<{ id: number; question: string; expiresAt: Date } | null> {
+    const poll = await Poll.findOne({ where: { pollCode } });
+    if (!poll) return null;
+    return {
+      id: poll.id,
+      question: poll.question,
+      expiresAt: poll.expiresAt,
+    };
+  }
 }

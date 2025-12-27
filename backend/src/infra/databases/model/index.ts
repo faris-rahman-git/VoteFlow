@@ -17,3 +17,6 @@ Vote.belongsTo(Option, { foreignKey: "optionId" });
 
 Option.hasOne(OptionResult, { foreignKey: "optionId", onDelete: "CASCADE" });
 OptionResult.belongsTo(Option, { foreignKey: "optionId" });
+
+Poll.hasMany(OptionResult, { foreignKey: "pollId", onDelete: "CASCADE" });
+OptionResult.belongsTo(Poll, { foreignKey: "pollId" });

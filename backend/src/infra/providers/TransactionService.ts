@@ -29,7 +29,7 @@ export class TransactionService implements ITransactionService {
         options,
         t
       );
-      await this.optionResultRepo.initOptionsResult(optionIds, t);
+      await this.optionResultRepo.initOptionsResult(pollId, optionIds, t);
     });
   }
 }

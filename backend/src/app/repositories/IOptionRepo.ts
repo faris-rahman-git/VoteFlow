@@ -6,4 +6,8 @@ export interface IOptionRepo {
     options: string[],
     transaction: Transaction
   ): Promise<number[]>;
+
+  getOptions(
+    pollId: number
+  ): Promise<{ id: number; text: string; count: number }[]>;
 }

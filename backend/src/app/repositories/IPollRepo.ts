@@ -9,4 +9,8 @@ export interface IPollRepo {
   ): Promise<number>;
 
   checkPollCodeExists(pollCode: string): Promise<boolean>;
+
+  getPoll(
+    pollCode: string
+  ): Promise<{ id: number; question: string; expiresAt: Date } | null>;
 }

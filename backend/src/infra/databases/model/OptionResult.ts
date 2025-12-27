@@ -13,6 +13,11 @@ OptionResult.init(
   {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
 
+    pollId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+
     optionId: {
       type: DataTypes.BIGINT,
       allowNull: false,

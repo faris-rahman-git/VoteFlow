@@ -6,7 +6,7 @@ function Routers() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/poll/:id" element={<Poll />} />
+      <Route path="/poll/:pollCode" element={<Poll />} />
     </Routes>
   );
 }

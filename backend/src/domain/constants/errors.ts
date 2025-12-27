@@ -4,4 +4,6 @@ export const PollErrors = {
   MAX_OPTIONS: "Please provide at most 10 options.",
   INVALID_OPTIONS: "Please provide valid options.",
   INVALID_DATE: "Please provide a valid date and time.",
+  INVALID_POLL_LINK: "Please use valid poll link.",
+  USERID_NOT_FOUND: "User not found! Please login again.",
 };

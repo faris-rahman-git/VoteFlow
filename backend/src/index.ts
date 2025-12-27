@@ -12,7 +12,7 @@ const server = http.createServer(app);
 async function start() {
   await initDatabase();
   await sequelize.authenticate();
-  await sequelize.sync({ alter: true }); //create/update tables
+  await sequelize.sync();
 
   server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
